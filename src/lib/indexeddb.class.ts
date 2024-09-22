@@ -1,10 +1,7 @@
 // RxJS.
 import { from } from 'rxjs';
 
-// Class.
-import { ConsoleLog } from './console-log.class';
-
-// Types.
+// Type.
 import { IDBStore } from './type/indexeddb-store.type';
 
 export class IndexedDB<
@@ -17,32 +14,45 @@ export class IndexedDB<
     <StoreNames extends string>(store: IDBStore<StoreNames>) => store;
 
   /**
-   * 
+   * Property to IDBDatabase.
    */
   public get db(): IDBDatabase {
     return this.#db;
   }
 
   /**
-   * 
+   * Database name.
    */
   public get name(): Name {
     return this.#db.name as Name;
   }
 
   /**
-   * 
+   * Property to Open Request.
    */
   public get request(): IDBOpenDBRequest {
     return this.#request;
   }
 
+  // Database.
   #db!: IDBDatabase;
+
+  // Open Request.
   #request!: IDBOpenDBRequest;
+
+  // Store configuration.
   #store: IDBStore<StoreNames>;
+
+  // Store names.
   #storeNames: StoreNames;
 
-
+  /**
+   * 
+   * @param name 
+   * @param store 
+   * @param storeName 
+   * @param version 
+   */
   constructor(
     name: Name,
     store: IDBStore<StoreNames>,
@@ -104,23 +114,10 @@ export class IndexedDB<
         typeof onSuccess === 'function' &&
           (request.onsuccess = (ev: any) =>
             onSuccess(ev.target.result, request, ev));
-
       },
-      ev => {
-        new ConsoleLog(`Transaction`).log([
-          {name: `Add`, value}, {name: `Store`, value: name},
-        ], {info: `Completed`});
-      },
-      ev => {
-        new ConsoleLog(`Transaction`).log([
-          {name: `Add`, value}, {name: `Store`, value: name},
-        ], {warn: `Aborted`});
-      },
-      ev => {
-        new ConsoleLog(`Transaction`).log([
-          {name: `Add`, value}, {name: `Store`, value: name},
-        ], {error: `Error`});
-      },
+      undefined,
+      undefined,
+      undefined,
       name,
       mode
     );
@@ -153,9 +150,7 @@ export class IndexedDB<
     from(value).subscribe({
       next: value => this.add(value, key, onSuccess, onError, name, mode),
       complete: onComplete,
-      error: err => new ConsoleLog(`Subscription`).log([
-        {name: `Add multiple`, value: err}, {name: `Store`, value: name},
-      ], {error: `Error`})
+      error: err => {}
     })
     return this;
   }
@@ -175,13 +170,7 @@ export class IndexedDB<
           store[objectStoreName]
         );
 
-        store[objectStoreName].index?.forEach((index) => {
-          console.log(`Index name`, index.name, );
-          console.log(`Index keyPath`, index.keyPath, );
-          console.log(`Index options`, index.options, );
-
-          objectStore.createIndex(index.name, index.keyPath, index.options);
-        });
+        store[objectStoreName].index?.forEach((index) => objectStore.createIndex(index.name, index.keyPath, index.options));
       });
     return this;
   }
@@ -213,15 +202,9 @@ export class IndexedDB<
         request.onsuccess = (ev: any) =>
           typeof onSuccess === 'function' && onSuccess(ev.target.result, request, ev);
       },
-      ev => {
-        // console.log(`[COMPLETED]: GET Transaction ${id} from ${storeName}.`);
-      },
-      ev => {
-        // console.log(`[ABORT]: GET Transaction ${id} from ${storeName}.`);
-      },
-      ev => {
-        // console.log(`[ERROR]: GET Transaction ${id} from ${storeName}.`);
-      },
+      undefined,
+      undefined,
+      undefined,
       name,
       mode
     );
@@ -266,17 +249,16 @@ export class IndexedDB<
       name,
       mode
     );
-    return this;
   }
 
   /**
-   * 
+   * Get object of store name in mode.
    * @param name 
    * @param onComplete 
    * @param onAbort 
    * @param onError 
    * @param mode 
-   * @returns 
+   * @returns The returned value is an object store.
    */
   public objectStore(
     onSuccess?: (store: IDBObjectStore, transaction: IDBTransaction) => any,
@@ -321,9 +303,9 @@ export class IndexedDB<
   }
 
   /**
-   *
-   * @param store
-   * @returns
+   * 
+   * @param store 
+   * @returns 
    * @angularpackage
    */
   public onUpgradeNeeded(store: IDBStore): this {
@@ -341,37 +323,47 @@ export class IndexedDB<
     return this;
   }
 
+  /**
+   * Put value in specified key and store.
+   * @param value 
+   * @param key 
+   * @param onSuccess 
+   * @param onError 
+   * @param name 
+   * @param mode 
+   * @returns This instance.
+   * @angularpackage
+   */
   public put(
     value: any,
     key?: IDBValidKey,
-    onSuccess?: (result: any, ev: Event) => any,
-    onError?: (ev: Event) => any,
+    onSuccess?: (result: any, request: IDBRequest<IDBValidKey>, ev: Event) => any,
+    onError?: (this: IDBRequest<IDBValidKey>, ev: Event) => any,
     name: StoreNames = this.#storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
     this.objectStore((store, transaction) => {
         const request = store.put(value, key);
-        request.onerror = (event) => onError;
-        request.onsuccess = (ev: any) => onSuccess
+        typeof onError === 'function' && (request.onerror = onError);
+        request.onsuccess = (ev: any) => typeof onSuccess === 'function' && onSuccess(ev.target.result, request, ev);
       },
-      () => {},
-      () => {},
-      () => {},
+      undefined,
+      undefined,
+      undefined,
       name,
       mode
     );
     return this;
   }
 
-
   /**
-   * 
+   * Get transaction object in database in success, complete, abort, and error handlers of store name in specified mode.
    * @param onComplete 
    * @param onAbort 
    * @param onError 
    * @param storeName 
    * @param mode 
-   * @returns 
+   * @returns This instance.
    */
   public transaction(
     onSuccess?: (transaction: IDBTransaction) => any,
@@ -401,6 +393,15 @@ export class IndexedDB<
     return this;
   }
 
+  /**
+   * Method to handle handlers.
+   * @param transaction IDBTransaction 
+   * @param onSuccess On success handler of function type.
+   * @param onComplete On complete handler of function type.
+   * @param onAbort On abort handler of function type.
+   * @param onError On error handler of function type.
+   * @returns This instance.
+   */
   #transaction(
     transaction: IDBTransaction,
     onSuccess?: (transaction: IDBTransaction) => any,
