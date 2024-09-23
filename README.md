@@ -6,10 +6,6 @@
 
 The angular-package supports the development process of [angular](https://angular.io)-based applications in varied ways through the thoughtful, reusable, easy-to-use small pieces of code called packages.
 
-<br>
-
-<a href="https://angular-package.github.io/sass"><img src="https://sass-lang.com/assets/img/logos/logo.svg" width="92" height="92" /></a>
-
 ## Indexeddb
 
 Wrapper to IndexedDB client-side storage data management.
