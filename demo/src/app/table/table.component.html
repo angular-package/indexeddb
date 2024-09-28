@@ -1,0 +1,21 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th>Name</th>
+      <th>Weight</th>
+      <th>Symbol</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <ng-container *ngFor="let item of list; index as i;">
+      <tr>
+        <td>{{item?.position}}</td>
+        <td>{{item?.name}}</td>
+        <td>{{item?.weight}}</td>
+        <td>{{item?.symbol}}</td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
