@@ -142,7 +142,7 @@ fonts
 *.ignore*
 
 # demos
-demo
+# demo
 
 # compodoc documentation
-documentation
+documentations
