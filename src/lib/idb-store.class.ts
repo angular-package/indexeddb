@@ -92,7 +92,7 @@ export class IDBStore<
   ): this {
     this.#promise((resolve, reject, subscription) => (
       subscription.add(
-        of(value).subscribe({
+        (Array.isArray(value) ? of(...value) : of(value)).subscribe({
           next: value => this.#add(
             storeName,
             value as any,
@@ -217,7 +217,6 @@ export class IDBStore<
     );
     return this;
   }
-
 
   /**
    * 
