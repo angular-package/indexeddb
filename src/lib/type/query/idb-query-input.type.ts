@@ -1,7 +1,8 @@
 // Type.
 import { IDBQueryAdd } from "./idb-query-add.type";
-import { IDBQueryGetAll } from "./idb-query-get-all.type";
 import { IDBQueryGet } from "./idb-query-get.type";
+import { IDBQueryGetAll } from "./idb-query-get-all.type";
+import { IDBQueryOpenCursor } from "./idb-query-open-cursor.type";
 import { IDBQueryPut } from "./idb-query-put.type";
 
 /**
@@ -14,7 +15,8 @@ export type IDBQueryInput<
   add?: Partial<{ [Key in StoreName]: IDBQueryAdd<Key, StoreSchema, StoreName> }>,
   get?: Partial<{ [Key in StoreName]: IDBQueryGet<StoreName> }>,
   getAll?: Partial<{ [Key in StoreName]: IDBQueryGetAll<StoreName> }>,
-  put?: Partial<{ [Key in StoreName]: IDBQueryPut<Key, StoreSchema, StoreName> }>
+  openCursor?: Partial<{ [Key in StoreName]: IDBQueryOpenCursor<StoreName> }>,
+  put?: Partial<{ [Key in StoreName]: IDBQueryPut<Key, StoreSchema, StoreName> }>,
 }
 
 // Examples.
