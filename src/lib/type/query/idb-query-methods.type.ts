@@ -12,8 +12,8 @@ export type IDBQueryMethods<
   StoreSchema extends object,
   StoreName extends keyof StoreSchema
 > = {
-  add: IDBQueryAdd<Key, StoreSchema, StoreName>,
-  get: IDBQueryGet<StoreName>,
-  getAll: IDBQueryGetAll<StoreName>,
-  put: IDBQueryPut<Key, StoreSchema, StoreName>,
+  add: {storeName: StoreName} & IDBQueryAdd<Key, StoreSchema, StoreName>,
+  get: {storeName: StoreName} & IDBQueryGet<StoreName>,
+  getAll: {storeName: StoreName} & IDBQueryGetAll<StoreName>,
+  put: {storeName: StoreName} & IDBQueryPut<Key, StoreSchema, StoreName>,
 }
