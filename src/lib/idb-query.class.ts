@@ -8,12 +8,11 @@ import { IDBQueryAdd } from './type/query/idb-query-add.type';
 import { IDBQueryGet } from './type/query/idb-query-get.type';
 import { IDBQueryGetAll } from './type/query/idb-query-get-all.type';
 import { IDBQueryInput } from './type/query/idb-query-input.type';
-import { IDBQueryMethodProperties } from './type/query/idb-query-method-properties.type';
+import { IDBQueryOpenCursor } from './type/query/idb-query-open-cursor.type';
 import { IDBQueryPut } from './type/query/idb-query-put.type';
 
 // Interface.
 import { IDBConfig } from './interface/idb-config.interface';
-import { IDBQueryOpenCursor } from './type/query/idb-query-open-cursor.type';
 
 /**
  * 
@@ -70,26 +69,65 @@ export class IDBQuery<
    */
   public execute(
     query: IDBQueryInput<StoreSchema, StoreName>,
-
   ): this {
-
-    // const a = Object.keys(query) as unknown as keyof IndexedDBQueryInput<StoreSchema, StoreName>[];
-
     of(query).subscribe(
       query => {
         this.eachMethod(query, method => {
-          // console.log(query[method]);
-
-          this.eachStore(query[method] as any, (storeName) => {
-            const queryMethod = query[method];
-            if (queryMethod) {
-              const queryStore = queryMethod[storeName as keyof typeof queryMethod] as IDBQueryMethodProperties<StoreSchema, StoreName>;
-
-
-
-              console.log(method, storeName, queryStore);
+          if (method === 'add') {
+            if (query[method]) {
+              Object
+                .entries<IDBQueryAdd<StoreName, StoreSchema, StoreName>>(query[method] as any)
+                .forEach((([store, query]) => this.#add({
+                  ...{storeName: store as StoreName},
+                  ...query
+                })));
             }
-          });
+          }
+
+          if (method === 'get') {
+            if (query[method]) {
+              Object
+                .entries<IDBQueryGet<StoreName>>(query[method] as any)
+                .forEach((([store, query]) => this.#get({
+                  ...{storeName: store as StoreName},
+                  ...query
+                })));
+            }
+          }
+
+          if (method === 'getAll') {
+            if (query[method]) {
+              Object
+                .entries<IDBQueryGetAll<StoreName>>(query[method] as any)
+                .forEach((([store, query]) => this.#getAll({
+                  ...{storeName: store as StoreName},
+                  ...query
+                })));
+            }
+          }
+
+          if (method === 'openCursor') {
+            if (query[method]) {
+              Object
+                .entries<IDBQueryOpenCursor<StoreName>>(query[method] as any)
+                .forEach((([store, query]) => this.#openCursor({
+                  ...{storeName: store as StoreName},
+                  ...query
+                })));
+            }
+          }
+
+          if (method === 'put') {
+            if (query[method]) {
+              Object
+                .entries<IDBQueryPut<StoreName, StoreSchema, StoreName>>(query[method] as any)
+                .forEach((([store, query]) => this.#put({
+                  ...{storeName: store as StoreName},
+                  ...query
+                })));
+            }
+          }
+
         });
       },
     );
@@ -107,20 +145,6 @@ export class IDBQuery<
     callbackfn: (method: keyof IDBQueryInput<StoreSchema, StoreName>) => void
   ): this {
     Object.keys(query).forEach(callbackfn as any);
-    return this;
-  }
-
-  /**
-   * 
-   * @param query 
-   * @param callbackfn 
-   * @returns 
-   */
-  public eachStore(
-    queryStore: IDBQueryInput<StoreSchema, StoreName>,
-    callbackfn: (storeName: keyof StoreSchema) => void
-  ): this {
-    Object.keys(queryStore).forEach(callbackfn as any);
     return this;
   }
 
