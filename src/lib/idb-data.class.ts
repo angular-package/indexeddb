@@ -9,7 +9,7 @@ import { IDBStoreParameters } from './type/idb-store-parameters.type';
  */
 export class IDBData<
   Name extends string = string,
-  StoreName extends string | number | symbol = string,
+  StoreNames extends string | number | symbol = string,
   Version extends number = number,
 > {
   /**
@@ -22,7 +22,7 @@ export class IDBData<
   /**
    * 
    */
-  #connection!: IDBConnection<Name, StoreName, Version>;
+  #connection!: IDBConnection<Name, StoreNames, Version>;
 
   /**
    * 
@@ -33,8 +33,8 @@ export class IDBData<
    */
   constructor(
     name: Name,
-    storeNames: StoreName | StoreName[],
-    store?: IDBStoreParameters<StoreName>,
+    storeNames: StoreNames | StoreNames[],
+    store?: IDBStoreParameters<StoreNames>,
     version: Version = 1 as any
   ) {
     this.#connection = new IDBConnection(
@@ -57,7 +57,7 @@ export class IDBData<
    * @returns 
    */
   public objectStore(
-    storeName: StoreName,
+    storeName: StoreNames,
 
     // Transaction.
     onsuccess?: (store: IDBObjectStore, transaction: IDBTransaction) => any,
@@ -66,7 +66,7 @@ export class IDBData<
     onerror?: (this: IDBTransaction, ev: Event) => any,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.connection.storeNames,
     mode?: IDBTransactionMode
   ): this {
     return this.transaction(
@@ -96,7 +96,7 @@ export class IDBData<
     oncomplete?: (this: IDBTransaction, ev: Event) => any,
     onabort?: (this: IDBTransaction, ev: Event) => any,
     onerror?: (this: IDBTransaction, ev: Event) => any,
-    storeNames: StoreName | StoreName[] = this.#connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#connection.storeNames,
     mode: IDBTransactionMode = "readonly"
   ): this {
     this.#connection.db ?
