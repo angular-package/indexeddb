@@ -6,6 +6,11 @@ import { IDBData } from './idb-data.class';
 
 // Type.
 import { IDBStoreParameters } from './type/idb-store-parameters.type';
+import { IDBRequestTransaction } from './type/idb-request-transaction.type';
+import { IDBRequestOnSuccess } from './type/idb-request-on-success.type';
+
+// Interface.
+import { IDBStoreInterface } from './interface/idb-store.interface';
 
 /**
  * 
@@ -13,9 +18,9 @@ import { IDBStoreParameters } from './type/idb-store-parameters.type';
 export class IDBStore<
   StoreSchema extends object,
   Name extends string = string,
-  StoreName extends keyof StoreSchema = keyof StoreSchema,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
   Version extends number = number,
-> {
+> implements IDBStoreInterface<StoreSchema, StoreNames> {
   /**
    * 
    */
@@ -33,7 +38,7 @@ export class IDBStore<
   /**
    * 
    */
-  #database!: IDBData<Name, StoreName, Version>;
+  #database!: IDBData<Name, StoreNames, Version>;
 
   /**
    * 
@@ -44,8 +49,8 @@ export class IDBStore<
    */
   constructor(
     name: Name,
-    storeNames: StoreName | StoreName[],
-    store?: IDBStoreParameters<StoreName>,
+    storeNames: StoreNames | StoreNames[],
+    store?: IDBStoreParameters<StoreNames>,
     version: Version = 1 as any
   ) {
     this.#database = new IDBData(name, storeNames, store, version);
@@ -65,29 +70,24 @@ export class IDBStore<
    * @param mode 
    * @returns 
    */
-  public add<Name extends StoreName>(
+  public add<StoreName extends StoreNames>(
     storeName: StoreName,
-    value: StoreSchema[Name] | StoreSchema[Name][],
+    value: StoreSchema[StoreName] | StoreSchema[StoreName][],
     key?: IDBValidKey,
 
     // Request.
-    onsuccess?: <Result>(result: Result, request: IDBRequest<IDBValidKey>, transaction: IDBTransaction, ev: Event) => any,
+    onsuccess?: IDBRequestOnSuccess<IDBValidKey, IDBValidKey> | null,
     onerror?: (this: IDBRequest<IDBValidKey>, ev: Event) => any,
 
     // Transaction.
-    transaction?: Partial<{
-      onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-      oncomplete: (this: IDBTransaction, ev: Event) => any,
-      onabort: (this: IDBTransaction, ev: Event) => any,
-      onerror: (this: IDBTransaction, ev: Event) => any,
-    }>,
+    transaction?: IDBRequestTransaction,
 
     // Subscribe.
     complete?: () => void,
     error?: (err: any) => void,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
     this.#promise((resolve, reject, subscription) => (
@@ -115,6 +115,51 @@ export class IDBStore<
   /**
    * 
    * @param storeName 
+   * @param onsuccess 
+   * @param onerror 
+   * @param transaction 
+   * @param storeNames 
+   * @param mode 
+   * @returns 
+   */
+  public clear<StoreName extends StoreNames>(
+    storeName: StoreName,
+
+    // Request.
+    onsuccess?: IDBRequestOnSuccess<undefined, undefined> | null,
+    onerror?: ((this: IDBRequest<undefined>, ev: Event) => any),
+
+    // Transaction.
+    transaction?: IDBRequestTransaction,
+
+    // Store.
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    mode: IDBTransactionMode = "readwrite"
+  ): this {
+    this.#database.objectStore(
+      storeName,
+      store => {
+        const request = store.clear();
+
+        // On error.
+        typeof onerror === 'function' && (request.onerror = onerror);
+
+        // On success.
+        request.onsuccess = (ev: any) =>
+          typeof onsuccess === 'function' && onsuccess(ev.target.result, request, ev);
+      },
+      transaction?.oncomplete,
+      transaction?.onabort,
+      transaction?.onerror,
+      storeNames,
+      mode
+    );
+    return this;
+  }
+
+  /**
+   * 
+   * @param storeName 
    * @param query 
    * @param onsuccess 
    * @param onerror 
@@ -123,24 +168,113 @@ export class IDBStore<
    * @param mode 
    * @returns 
    */
-  public get(
+  public count<StoreName extends StoreNames>(
+    storeName: StoreName,
+    query?: IDBValidKey | IDBKeyRange,
+
+    // Request.
+    onsuccess?: IDBRequestOnSuccess<number, number> | null,
+    onerror?: ((this: IDBRequest<number>, ev: Event) => any),
+
+    // Transaction.
+    transaction?: IDBRequestTransaction,
+
+    // Store.
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    mode: IDBTransactionMode = "readwrite"
+  ): this {
+    this.#database.objectStore(
+      storeName,
+      store => {
+        const request = store.count(query);
+
+        // On error.
+        typeof onerror === 'function' && (request.onerror = onerror);
+
+        // On success.
+        request.onsuccess = (ev: any) =>
+          typeof onsuccess === 'function' && onsuccess(ev.target.result, request, ev);
+      },
+      transaction?.oncomplete,
+      transaction?.onabort,
+      transaction?.onerror,
+      storeNames,
+      mode
+    );
+    return this;
+  }
+
+  /**
+   * 
+   * @param storeName 
+   * @param query 
+   * @param onsuccess 
+   * @param onerror 
+   * @param transaction 
+   * @param storeNames 
+   * @param mode 
+   * @returns 
+   */
+  public delete<StoreName extends StoreNames>(
     storeName: StoreName,
     query: IDBValidKey | IDBKeyRange,
 
     // Request.
-    onsuccess?: (result: any, request: IDBRequest<any>, ev: Event) => any,
+    onsuccess?: IDBRequestOnSuccess<undefined, undefined> | null,
+    onerror?: (this: IDBRequest<undefined>, ev: Event) => any,
+
+    // Transaction.
+    transaction?: IDBRequestTransaction,
+
+    // Store.
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    mode: IDBTransactionMode = "readwrite"
+  ): this {
+    this.#database.objectStore(
+      storeName,
+      store => {
+        const request = store.delete(query);
+
+        // On error.
+        typeof onerror === 'function' && (request.onerror = onerror);
+
+        // On success.
+        request.onsuccess = (ev: any) =>
+          typeof onsuccess === 'function' && onsuccess(ev.target.result, request, ev);
+      },
+      transaction?.oncomplete,
+      transaction?.onabort,
+      transaction?.onerror,
+      storeNames,
+      mode
+    );
+    return this;
+  }
+
+  /**
+   * 
+   * @param storeName 
+   * @param query 
+   * @param onsuccess 
+   * @param onerror 
+   * @param transaction 
+   * @param storeNames 
+   * @param mode 
+   * @returns 
+   */
+  public get<StoreName extends StoreNames>(
+    storeName: StoreName,
+    query: IDBValidKey | IDBKeyRange,
+
+    // Request.
+    onsuccess?: IDBRequestOnSuccess<StoreSchema[StoreName], StoreSchema[StoreName]> | null,
     onerror?: (this: IDBRequest<any>, ev: Event) => any,
 
     // Transaction.
-    transaction?: Partial<{
-      onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-      oncomplete: (this: IDBTransaction, ev: Event) => any,
-      onabort: (this: IDBTransaction, ev: Event) => any,
-      onerror: (this: IDBTransaction, ev: Event) => any,
-    }>,
+    transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode: IDBTransactionMode = "readonly"
   ): this {
     this.#database.objectStore(
@@ -176,25 +310,20 @@ export class IDBStore<
    * @param mode 
    * @returns 
    */
-  public getAll(
+  public getAll<StoreName extends StoreNames>(
     storeName: StoreName,
     query?: IDBValidKey | IDBKeyRange,
     count?: number,
 
     // Request.
-    onsuccess?: (result: any, request: IDBRequest<any>, ev: Event) => any,
+    onsuccess?: IDBRequestOnSuccess<StoreSchema[StoreName][], StoreSchema[StoreName][]> | null,
     onerror?: ((this: IDBRequest<any[]>, ev: Event) => any) | null,
 
     // Transaction.
-    transaction?: Partial<{
-      onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-      oncomplete: (this: IDBTransaction, ev: Event) => any,
-      onabort: (this: IDBTransaction, ev: Event) => any,
-      onerror: (this: IDBTransaction, ev: Event) => any,
-    }>,
+    transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode: IDBTransactionMode = "readonly"
   ): this {
     this.#database.objectStore(
@@ -206,8 +335,7 @@ export class IDBStore<
         typeof onerror === 'function' && (request.onerror = onerror);
 
         // On success.
-        request.onsuccess = (ev: any) =>
-          typeof onsuccess === 'function' && onsuccess(ev.target.result, request, ev);
+        typeof onsuccess === 'function' && (request.onsuccess = (ev: any) => onsuccess(ev.target.result, request, ev));
       },
       transaction?.oncomplete,
       transaction?.onabort,
@@ -220,33 +348,77 @@ export class IDBStore<
 
   /**
    * 
+   * @param storeName 
+   * @param name 
+   * @param onsuccess 
+   * @param onerror 
+   * @param transaction 
+   * @param storeNames 
+   * @param mode 
+   * @returns 
    */
-  public openCursor(
+  public index<StoreName extends StoreNames>(
+    storeName: StoreName,
+    name: string,
+
+    // Request.
+    onsuccess?: IDBRequestOnSuccess<any, any> | null,
+    onerror?: (this: IDBRequest<any>, ev: Event) => any,
+
+    // Transaction.
+    transaction?: IDBRequestTransaction,
+
+    // Store.
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    mode: IDBTransactionMode = "readonly"
+  ): this {
+    this.#database.objectStore(
+      storeName,
+      store => {
+        const index = store.index(name);
+      },
+      transaction?.oncomplete,
+      transaction?.onabort,
+      transaction?.onerror,
+      storeNames,
+      mode
+    );
+    return this;
+  }
+
+  /**
+   * 
+   * @param storeName 
+   * @param query 
+   * @param direction 
+   * @param onsuccess 
+   * @param onerror 
+   * @param transaction 
+   * @param storeNames 
+   * @param mode 
+   * @returns 
+   */
+  public openCursor<StoreName extends StoreNames>(
     storeName: StoreName,
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection,
 
     // Request.
-    onsuccess?: (this: IDBRequest<IDBCursorWithValue | null>, ev: Event) => any | null,
+    onsuccess?: IDBRequestOnSuccess<any, IDBCursorWithValue | null> | null,
     onerror?: (this: IDBRequest<IDBCursorWithValue | null>, ev: Event) => any | null,
 
     // Transaction.
-    transaction?: Partial<{
-      onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-      oncomplete: (this: IDBTransaction, ev: Event) => any,
-      onabort: (this: IDBTransaction, ev: Event) => any,
-      onerror: (this: IDBTransaction, ev: Event) => any,
-    }>,
+    transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode?: IDBTransactionMode
   ): this {
     this.#database.objectStore(
       storeName,
       store => {
         const request = store.openCursor(query, direction);
-        typeof onsuccess === 'function' && (request.onsuccess = onsuccess);
+        typeof onsuccess === 'function' && (request.onsuccess = (ev: any) => onsuccess(ev.target.result, request, ev));
         typeof onerror === 'function' && (request.onerror = onerror);
       },
       transaction?.oncomplete,
@@ -270,31 +442,26 @@ export class IDBStore<
    * @param mode 
    * @returns 
    */
-  public put(
+  public put<StoreName extends StoreNames>(
     storeName: StoreName,
-    value: any,
+    value: StoreSchema[StoreName],
     key?: IDBValidKey,
 
     // Request.
-    onsuccess?: <Result>(result: Result, transaction: IDBTransaction, ev: Event) => any,
+    onsuccess?: IDBRequestOnSuccess<IDBValidKey, IDBValidKey> | null,
     onerror?: (this: IDBRequest<IDBValidKey>, ev: Event) => any,
 
     // Transaction.
-    transaction?: Partial<{
-      onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-      oncomplete: (this: IDBTransaction, ev: Event) => any,
-      onabort: (this: IDBTransaction, ev: Event) => any,
-      onerror: (this: IDBTransaction, ev: Event) => any,
-    }>,
+    transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
-    this.#database.objectStore(storeName, (store, transaction) => {
+    this.#database.objectStore(storeName, store => {
         const request = store.put(value, key);
         typeof onerror === 'function' && (request.onerror = onerror);
-        typeof onsuccess === 'function' && (request.onsuccess = (ev: any) => onsuccess(ev.target.result, transaction, ev));
+        typeof onsuccess === 'function' && (request.onsuccess = (ev: any) => onsuccess(ev.target.result, request, ev));
       },
       transaction?.oncomplete,
       transaction?.onabort,
@@ -304,6 +471,7 @@ export class IDBStore<
     );
     return this;
   }
+  
 
   /**
    * 
@@ -317,39 +485,32 @@ export class IDBStore<
    * @param mode 
    * @returns 
    */
-  #add<Name extends StoreName>(
-    storeName: Name,
-    value: StoreSchema[Name],
+  #add<StoreName extends StoreNames>(
+    storeName: StoreName,
+    value: StoreSchema[StoreName],
     key?: IDBValidKey,
 
     // Request.
-    onsuccess?: <Result>(result: Result, request: IDBRequest<IDBValidKey>, transaction: IDBTransaction, ev: Event) => any,
+    onsuccess?: IDBRequestOnSuccess<IDBValidKey, IDBValidKey> | null,
     onerror?: (this: IDBRequest<IDBValidKey>, ev: Event) => any,
 
     // Transaction.
-    transaction?: Partial<{
-      onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-      oncomplete: (this: IDBTransaction, ev: Event) => any,
-      onabort: (this: IDBTransaction, ev: Event) => any,
-      onerror: (this: IDBTransaction, ev: Event) => any,
-    }>,
+    transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreName | StoreName[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode: IDBTransactionMode = "readwrite",
   ): this {
     this.#database.objectStore(
       storeName,
-      (store, transaction) => {
+      store => {
         const request = store.add(value, key);
 
         // On error.
         typeof onerror === 'function' && (request.onerror = onerror);
 
         // On success.
-        typeof onsuccess === 'function' &&
-          (request.onsuccess = (ev: any) =>
-            onsuccess(ev.target.result, request, transaction, ev));
+        typeof onsuccess === 'function' && (request.onsuccess = (ev: any) => onsuccess(ev.target.result, request, ev));
       },
       transaction?.oncomplete,
       transaction?.onabort,
