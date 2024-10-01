@@ -102,33 +102,49 @@ The documentation is in construction and it's available at [https://angular-pack
 
 Class to open connection and create object store.
 
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-connection.class.ts)
+
 ### IDBData
 
 Class with opened connection (IDBConnection), to handle transaction and store.
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-data.class.ts)
 
 ### IDBQuery
 
 Query store with JSON, by method-store or store-method.
 
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-query.class.ts)
+
 ### IDBStore
 
 Store methods with database connection (IDBData).
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-store.class.ts)
 
 ### IDBConfig
 
 IDB configuration used in Angular IDBModule.
 
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-config.class.ts)
+
 ### IDBModule
 
 Angular Module with indexeddb service.
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-module.class.ts)
 
 ### IDBService
 
 Angular Service with IndexedDB class.
 
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-service.class.ts)
+
 ### IndexedDB
 
 Store and query for IndexedDB client-side storage.
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/indexeddb.class.ts)
 
 <br>
 
