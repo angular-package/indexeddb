@@ -85,16 +85,6 @@ The documentation is in construction and it's available at [https://angular-pack
 
 <br>
 
-## Includes
-
-### Class
-
-### Service
-
-### RxState
-
-<br>
-
 ## Changelog
 
 To read it, click on the [CHANGELOG.md][indexeddb-github-changelog] link.
