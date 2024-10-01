@@ -1,6 +1,6 @@
 {
   "name": "@angular-package/indexeddb",
-  "version": "1.0.0-beta",
+  "version": "1.0.0-alpha",
   "author": "@angular-package <contact@angular-package.dev>",
   "homepage": "",
   "description": "Wrapper to IndexedDB client-side storage.",
