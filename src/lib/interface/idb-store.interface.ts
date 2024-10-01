@@ -177,8 +177,7 @@ export interface IDBStoreInterface<
     name: string,
 
     // Request.
-    onsuccess?: IDBRequestOnSuccess<any, any> | null,
-    onerror?: (this: IDBRequest<any>, ev: Event) => any,
+    onsuccess?: (index: IDBIndex) => any,
 
     // Transaction.
     transaction?: IDBRequestTransaction,
