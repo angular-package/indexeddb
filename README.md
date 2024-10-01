@@ -8,7 +8,7 @@ The angular-package supports the development process of [angular](https://angula
 
 ## Indexeddb
 
-Wrapper to IndexedDB client-side storage data management.
+Wrapper to IndexedDB client-side storage.
 
 [![Gitter][gitter-badge]][gitter-chat]
 [![Discord][discord-badge]][discord-channel]
@@ -40,10 +40,6 @@ Package is **free** to use. If you enjoy it, please consider donating via [fiat]
 * [Skeleton](#skeleton)
 * [Code scaffolding](#code-scaffolding)
 * [Documentation](#documentation)
-* [Includes](#includes)
-  * [Class](#class)
-  * [Service](#service)
-  * [RxState](#rxstate)
 * [Changelog](#changelog)
 * [Git](#git)
   * [Commit](#commit)
@@ -63,7 +59,7 @@ Copy this package to the `packages/indexeddb` folder of the [skeleton workspace]
 ## Code scaffolding
 
 Run `ng generate component component-name --project indexeddb` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project indexeddb`.
-> Note: Don't forget to add `--project indexeddb` or else it will be added to the default project in your `angular.json` file. 
+> Note: Don't forget to add `--project indexeddb` or else it will be added to the default project in your `angular.json` file.
 
 ### Build
 
@@ -85,7 +81,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Documentation
 
-The documentation is in construction and it's available at [https://docs.angular-package.dev/v/indexeddb](https://docs.angular-package.dev/v/indexeddb/)
+The documentation is in construction and it's available at [https://angular-package.gitbook.io/indexedb](https://angular-package.gitbook.io/indexedb)
 
 <br>
 
