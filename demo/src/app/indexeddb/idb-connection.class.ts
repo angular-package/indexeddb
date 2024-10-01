@@ -2,7 +2,7 @@
 import { IDBStoreParameters } from './type/idb-store-parameters.type';
 
 /**
- * 
+ * Class to open connection and create object store.
  */
 export class IDBConnection<
   Name extends string = string,

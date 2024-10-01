@@ -117,15 +117,4 @@ export class IndexedDB<
     );
     return this;
   }
-
-  /**
-   * 
-   * @param config 
-   * @returns 
-   */
-  // public query(
-  //   query: IDBQueryInput<StoreSchema, StoreNames>
-  // ): IDBQuery<StoreSchema, Name, StoreNames, Version> | undefined {
-  //   return this.#query.execute(query);
-  // }
 }

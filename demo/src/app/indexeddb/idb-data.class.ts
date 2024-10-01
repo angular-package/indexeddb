@@ -5,7 +5,7 @@ import { IDBConnection } from './idb-connection.class';
 import { IDBStoreParameters } from './type/idb-store-parameters.type';
 
 /**
- * 
+ * Class with opened connection (IDBConnection), to handle transaction and store.
  */
 export class IDBData<
   Name extends string = string,
