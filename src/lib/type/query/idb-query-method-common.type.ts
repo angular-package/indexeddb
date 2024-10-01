@@ -1,16 +1,18 @@
 // Type.
+import { IDBRequestOnSuccess } from "../idb-request-on-success.type";
 import { IDBRequestTransaction } from "../idb-request-transaction.type";
 
 /**
  * 
  */
-export type IDBQueryIndex<
+export type IDBQueryMethodCommon<
   StoreNames extends string | number | symbol = string,
+  Result = any,
+  RequestResult = any,
 > = {
-  name: string;
-
   // Request.
-  onsuccess?: (index: IDBIndex) => any,
+  onsuccess?: IDBRequestOnSuccess<Result, RequestResult>,
+  onerror?: (this: IDBRequest<RequestResult>, ev: Event) => any,
 
   // Transaction.
   transaction?: IDBRequestTransaction,
@@ -18,4 +20,4 @@ export type IDBQueryIndex<
   // Store.
   storeNames?: StoreNames | StoreNames[],
   mode?: IDBTransactionMode;
-};
+}

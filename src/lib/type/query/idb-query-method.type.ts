@@ -12,7 +12,7 @@ import { IDBQueryPut } from "./idb-query-put.type";
 /**
  * Query method input.
  */
-export type IDBQueryMethods<
+export type IDBQueryMethod<
   StoreName extends StoreNames,
   StoreSchema extends object,
   StoreNames extends keyof StoreSchema
@@ -26,4 +26,4 @@ export type IDBQueryMethods<
   index: {storeName: StoreName} & IDBQueryIndex<StoreNames>,
   openCursor: { storeName: StoreName } & IDBQueryOpenCursor<StoreSchema, StoreNames>,
   put: {storeName: StoreName} & IDBQueryPut<StoreName, StoreSchema, StoreNames>,
-}
+};
