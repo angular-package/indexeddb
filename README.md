@@ -37,14 +37,29 @@ Package is **free** to use. If you enjoy it, please consider donating via [fiat]
 
 ## Table of contents
 
+* [Demonstration](#demonstration)
 * [Skeleton](#skeleton)
 * [Code scaffolding](#code-scaffolding)
 * [Documentation](#documentation)
+  * [IDBConnection](#idbconnection) Class to open connection and create object store.
+  * [IDBData](#idbdata) Class with opened connection (IDBConnection), to handle transaction and store.
+  * [IDBQuery](#idbquery) Query store with JSON, by method-store or store-method.
+  * [IDBStore](#idbstore) Store methods with database connection (IDBData).
+  * [IDBConfig](#idbconfig) IDB configuration used in Angular IDBModule.
+  * [IDBModule](#idbmodule) Angular Module with indexeddb service.
+  * [IDBService](#idbservice) Angular Service with IndexedDB class.
+  * [IndexedDB](#indexeddb) Store and query for IndexedDB client-side storage.
 * [Changelog](#changelog)
 * [Git](#git)
   * [Commit](#commit)
   * [Versioning](#versioning)
 * [License](#license)
+
+<br>
+
+## Demonstration
+
+Demonstration available [here](https://github.com/angular-package/indexeddb/tree/main/demo) as Angular 14 starter application.
 
 <br>
 
@@ -82,6 +97,38 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## Documentation
 
 The documentation is in construction and it's available at [https://angular-package.gitbook.io/indexedb](https://angular-package.gitbook.io/indexedb)
+
+### IDBConnection
+
+Class to open connection and create object store.
+
+### IDBData
+
+Class with opened connection (IDBConnection), to handle transaction and store.
+
+### IDBQuery
+
+Query store with JSON, by method-store or store-method.
+
+### IDBStore
+
+Store methods with database connection (IDBData).
+
+### IDBConfig
+
+IDB configuration used in Angular IDBModule.
+
+### IDBModule
+
+Angular Module with indexeddb service.
+
+### IDBService
+
+Angular Service with IndexedDB class.
+
+### IndexedDB
+
+Store and query for IndexedDB client-side storage.
 
 <br>
 
