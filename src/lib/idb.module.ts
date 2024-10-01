@@ -8,7 +8,7 @@ import { IDBService } from './idb.service';
 import { IDBConfig } from './idb.config';
 
 /**
- * 
+ * Angular Module with indexeddb service.
  */
 @NgModule({
   declarations: [],

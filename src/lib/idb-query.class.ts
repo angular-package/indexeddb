@@ -14,7 +14,7 @@ import { IDBRangeBound } from './type/query/idb-range-bound.type';
 import { IDBConfig } from './interface/idb-config.interface';
 
 /**
- * 
+ * Query store with JSON, by method-store or store-method.
  */
 export class IDBQuery<
   StoreSchema extends object,
@@ -266,6 +266,39 @@ export class IDBQuery<
 
   /**
    * 
+   */
+  public method(
+    { }: IDBQueryMethod_Store<StoreSchema, StoreNames>,
+    complete?: () => void,
+    error?: (err: any) => void,
+  ): this {
+    of(arguments[0] as IDBQueryMethod_Store<StoreSchema, StoreNames>)
+      .subscribe({
+        next: query => 
+          this.#queryMethod(query, method => {
+            if (query[method]) {
+              const queryStore = query[method];
+              if (queryStore) {
+                (Object
+                  .keys(queryStore) as Array<keyof typeof queryStore>)
+                  .forEach(storeName => {
+                    this.#performMethod(method, {
+                      ...{ storeName },
+                      ...queryStore[storeName]
+                    } as any)
+                  });
+              }
+            }
+          }
+        ),
+        complete,
+        error
+      })
+    return this;
+  }
+
+  /**
+   * 
    * @param param0 
    * @returns 
    */
@@ -290,39 +323,6 @@ export class IDBQuery<
                     }
                   )
                 );
-            }
-          }
-        ),
-        complete,
-        error
-      })
-    return this;
-  }
-
-  /**
-   * 
-   */
-  public method(
-    { }: IDBQueryMethod_Store<StoreSchema, StoreNames>,
-    complete?: () => void,
-    error?: (err: any) => void,
-  ): this {
-    of(arguments[0] as IDBQueryMethod_Store<StoreSchema, StoreNames>)
-      .subscribe({
-        next: query => 
-          this.#queryMethod(query, method => {
-            if (query[method]) {
-              const queryStore = query[method];
-              if (queryStore) {
-                (Object
-                  .keys(queryStore) as Array<keyof typeof queryStore>)
-                  .forEach(storeName => {
-                    this.#performMethod(method, {
-                      ...{ storeName },
-                      ...queryStore[storeName]
-                    } as any)
-                  });
-              }
             }
           }
         ),

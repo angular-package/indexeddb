@@ -10,7 +10,7 @@ import { IDBConfig } from "./idb.config";
 import { IDBStoreParameters } from "./type/idb-store-parameters.type";
 
 /**
- * 
+ * Angular Service with IndexedDB class.
  */
 @Injectable({
   providedIn: "root",

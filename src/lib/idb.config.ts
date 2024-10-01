@@ -2,7 +2,7 @@
 import { IDBStoreParameters } from "./type/idb-store-parameters.type";
 
 /**
- * 
+ * IDB configuration used in Angular IDBModule.
  */
 export class IDBConfig<
   Name extends string = string,
