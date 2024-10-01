@@ -1,8 +1,8 @@
 /**
  * 
  */
-export type IDBStoreParameters<StoreName extends string | number | symbol = string> = {
-  [Key in StoreName]: IDBObjectStoreParameters & {
+export type IDBStoreParameters<StoreNames extends string | number | symbol = string> = {
+  [StoreName in StoreNames]: IDBObjectStoreParameters & {
     index?: {
       name: string;
       keyPath: string | string[];

@@ -1,28 +1,18 @@
+// Type.
+import { IDBQueryMethodCommon } from "./idb-query-method-common.type";
+
 /**
  * Query Put Parameters.
  */
 export type IDBQueryPut<
-  Name extends keyof StoreSchema,
+  StoreName extends StoreNames,
   StoreSchema extends object,
-  StoreName extends keyof StoreSchema = keyof StoreSchema
+  StoreNames extends keyof StoreSchema = keyof StoreSchema
 > = {
-  value: StoreSchema[Name],
-  key?: IDBValidKey,
+  value: StoreSchema[StoreName];
+  key?: IDBValidKey;
 
-  // Request.
-  onsuccess?: <Result>(result: Result, transaction: IDBTransaction, ev: Event) => any,
-  onerror?: (this: IDBRequest<IDBValidKey>, ev: Event) => any,
-
-  // Transaction.
-  transaction?: Partial<{
-    onsuccess: (store: IDBObjectStore, transaction: IDBTransaction) => any,
-    oncomplete: (this: IDBTransaction, ev: Event) => any,
-    onabort: (this: IDBTransaction, ev: Event) => any,
-    onerror: (this: IDBTransaction, ev: Event) => any,
-  }>,
-
-  // Store.
-  storeNames?: StoreName | StoreName[],
-  mode?: IDBTransactionMode
-
-}
+  // TODO: Subscribe.
+  complete?: () => void;
+  error?: (err: any) => void;
+} & IDBQueryMethodCommon<StoreNames, IDBValidKey, IDBValidKey>;

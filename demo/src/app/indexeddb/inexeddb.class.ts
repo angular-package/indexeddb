@@ -9,7 +9,6 @@ import { IDBConfig } from './interface/idb-config.interface';
 
 // Type.
 import { IDBStoreParameters } from './type/idb-store-parameters.type';
-import { IDBQueryInput } from './type/query/idb-query-input.type';
 
 /**
  * 
@@ -17,7 +16,7 @@ import { IDBQueryInput } from './type/query/idb-query-input.type';
 export class IndexedDB<
   StoreSchema extends object,
   Name extends string = string,
-  StoreName extends keyof StoreSchema = keyof StoreSchema,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
   Version extends number = number
 > {
   /**
@@ -27,9 +26,9 @@ export class IndexedDB<
    */
   public static config: <
     Name extends string,
-    StoreName extends string,
+    StoreNames extends string,
     Version extends number = number
-  >(config: IDBConfig<Name, StoreName, Version>) => IDBConfig<Name, StoreName, Version> =
+  >(config: IDBConfig<Name, StoreNames, Version>) => IDBConfig<Name, StoreNames, Version> =
     <
       Name extends string,
       StoreName extends string,
@@ -41,8 +40,8 @@ export class IndexedDB<
    * @param store 
    * @returns 
    */
-  public static store: <StoreName extends string>(store: IDBStoreParameters<StoreName>) => IDBStoreParameters<StoreName> =
-    <StoreName extends string>(store: IDBStoreParameters<StoreName>) => store;
+  public static store: <StoreNames extends string>(store: IDBStoreParameters<StoreNames>) => IDBStoreParameters<StoreNames> =
+    <StoreNames extends string>(store: IDBStoreParameters<StoreNames>) => store;
 
   /**
    * 
@@ -54,14 +53,21 @@ export class IndexedDB<
   /**
    * 
    */
-  public get store(): IDBStore<StoreSchema, Name, StoreName, Version> {
-    return this.#query.store;
+  public get store(): IDBStore<StoreSchema, Name, StoreNames, Version> {
+    return this.#query.objectStore;
   }
 
   /**
    * 
    */
-  #query!: IDBQuery<StoreSchema, Name, StoreName, Version>;
+  public get query(): IDBQuery<StoreSchema, Name, StoreNames, Version> {
+    return this.#query;
+  }
+
+  /**
+   * 
+   */
+  #query!: IDBQuery<StoreSchema, Name, StoreNames, Version>;
 
   /**
    * 
@@ -72,8 +78,8 @@ export class IndexedDB<
    */
   constructor(
     name: Name,
-    storeNames: StoreName | StoreName[],
-    store?: IDBStoreParameters<StoreName>,
+    storeNames: StoreNames | StoreNames[],
+    store?: IDBStoreParameters<StoreNames>,
     version: Version = 1 as any,
   ) {
     this.#query = new IDBQuery(
@@ -89,10 +95,10 @@ export class IndexedDB<
    */
   public onOpenSuccess(
     onOpenSuccess: (
-      indexeddb: IndexedDB<StoreSchema, Name, StoreName, Version>,
-      store: IDBStore<StoreSchema, Name, StoreName, Version>,
-      database: IDBData<Name, StoreName, Version>,
-      connection: IDBConnection<Name, StoreName, Version>,
+      indexeddb: IndexedDB<StoreSchema, Name, StoreNames, Version>,
+      store: IDBStore<StoreSchema, Name, StoreNames, Version>,
+      database: IDBData<Name, StoreNames, Version>,
+      connection: IDBConnection<Name, StoreNames, Version>,
       openRequest: IDBOpenDBRequest,
       ev: Event
     ) => any
@@ -101,8 +107,8 @@ export class IndexedDB<
       'success',
       ev => onOpenSuccess(
         this,
-        this.#query.store,
-        this.#query.store.database,
+        this.#query.objectStore,
+        this.#query.objectStore.database,
         this.connection,
         this.connection.request,
         ev
@@ -117,9 +123,9 @@ export class IndexedDB<
    * @param config 
    * @returns 
    */
-  public query(
-    query: IDBQueryInput<StoreSchema, StoreName>
-  ): IDBQuery<StoreSchema, Name, StoreName, Version> | undefined {
-    return this.#query.execute(query);
-  }
+  // public query(
+  //   query: IDBQueryInput<StoreSchema, StoreNames>
+  // ): IDBQuery<StoreSchema, Name, StoreNames, Version> | undefined {
+  //   return this.#query.execute(query);
+  // }
 }

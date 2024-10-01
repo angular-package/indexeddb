@@ -18,21 +18,21 @@ import { IDBStoreParameters } from "./type/idb-store-parameters.type";
 export class IDBService<
   StoreSchema extends object,
   Name extends string = string,
-  StoreName extends keyof StoreSchema = keyof StoreSchema,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
   Version extends number = number
 > {
   /**
    * Returns instance of IndexedDB.
    * @returns 
    */
-  public get indexeddb(): IndexedDB<StoreSchema, Name, StoreName, Version> {
+  public get indexeddb(): IndexedDB<StoreSchema, Name, StoreNames, Version> {
     return this.#indexeddb;
   }
 
   /**
    * 
    */
-  public get store(): IDBStoreParameters<StoreName> {
+  public get store(): IDBStoreParameters<StoreNames> {
     return this.#store;
   }
 
@@ -44,10 +44,29 @@ export class IDBService<
     return this.#version;
   }
 
-  #indexeddb!: IndexedDB<StoreSchema, Name, StoreName, Version>;
+  /**
+   * 
+   */
+  #indexeddb!: IndexedDB<StoreSchema, Name, StoreNames, Version>;
+
+  /**
+   * 
+   */
   #name!: Name;
-  #store!: IDBStoreParameters<StoreName>;
-  #storeNames!: StoreName | StoreName[];
+
+  /**
+   * 
+   */
+  #store!: IDBStoreParameters<StoreNames>;
+
+  /**
+   * 
+   */
+  #storeNames!: StoreNames | StoreNames[];
+
+  /**
+   * 
+   */
   #version!: Version;
 
   /**
@@ -57,7 +76,7 @@ export class IDBService<
    * @param store 
    * @param version 
    */
-  constructor(private idbconfig: IDBConfig<Name, StoreName, Version>) {
+  constructor(private idbconfig: IDBConfig<Name, StoreNames, Version>) {
     if (typeof idbconfig === 'object') {
       if (idbconfig.name) {
         this.#name = idbconfig.name
@@ -77,7 +96,7 @@ export class IDBService<
   /**
    * Creates IndexedDB database under provided name, store, and version.
    */
-  public create(): IndexedDB<StoreSchema, Name, StoreName, Version> {
+  public create(): IndexedDB<StoreSchema, Name, StoreNames, Version> {
     return this.#indexeddb = new IndexedDB(
       this.#name,
       this.#storeNames,

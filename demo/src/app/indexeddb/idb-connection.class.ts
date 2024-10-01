@@ -6,7 +6,7 @@ import { IDBStoreParameters } from './type/idb-store-parameters.type';
  */
 export class IDBConnection<
   Name extends string = string,
-  StoreName extends string | number | symbol = string,
+  StoreNames extends string | number | symbol = string,
   Version extends number = number
 > {
   /**
@@ -33,14 +33,14 @@ export class IDBConnection<
   /**
    * 
    */
-  public get store(): IDBStoreParameters<StoreName> | undefined {
+  public get store(): IDBStoreParameters<StoreNames> | undefined {
     return this.#store;
   }
 
   /**
    * 
    */
-  public get storeNames(): StoreName | StoreName[] {
+  public get storeNames(): StoreNames | StoreNames[] {
     return this.#storeNames;
   }
 
@@ -57,12 +57,12 @@ export class IDBConnection<
   /**
    * 
    */
-  #store?: IDBStoreParameters<StoreName>;
+  #store?: IDBStoreParameters<StoreNames>;
 
   /**
    * 
    */
-  #storeNames: StoreName | StoreName[];
+  #storeNames: StoreNames | StoreNames[];
 
   /**
    * 
@@ -73,8 +73,8 @@ export class IDBConnection<
    */
   constructor(
     name: Name,
-    storeNames: StoreName | StoreName[],
-    store?: IDBStoreParameters<StoreName>,
+    storeNames: StoreNames | StoreNames[],
+    store?: IDBStoreParameters<StoreNames>,
     version: Version = 1 as any,
   ) {
     this.#store = store;
@@ -104,7 +104,7 @@ export class IDBConnection<
    * @param store 
    * @returns 
    */
-  public onupgradeneeded(store: IDBStoreParameters<StoreName>): this {
+  public onupgradeneeded(store: IDBStoreParameters<StoreNames>): this {
     this.#request.addEventListener('upgradeneeded', (e: any) => (
       // Grab a reference to the opened database.
       this.#db = e.target.result as IDBDatabase,
@@ -125,16 +125,16 @@ export class IDBConnection<
    * @returns 
    */
   public createObjectStore(
-    store: IDBStoreParameters<StoreName>,
+    store: IDBStoreParameters<StoreNames>,
     db: IDBDatabase = this.#db
   ) {
     typeof store === 'object' &&
       Object.keys(store).forEach((objectStoreName) => {
         const objectStore = db.createObjectStore(
           objectStoreName,
-          store[objectStoreName as StoreName]
+          store[objectStoreName as StoreNames]
         );
-        store[objectStoreName as StoreName].index?.forEach((index) =>
+        store[objectStoreName as StoreNames].index?.forEach((index) =>
           objectStore.createIndex(index.name, index.keyPath, index.options)
         );
       });

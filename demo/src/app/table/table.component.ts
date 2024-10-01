@@ -26,7 +26,7 @@ export class TableComponent implements OnInit {
       'periodic',
       undefined,
       undefined,
-      result => this.list = result
+      (result) => this.list = result
     );
   }
 }

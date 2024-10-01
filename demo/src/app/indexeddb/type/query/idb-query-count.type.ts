@@ -5,13 +5,10 @@ import { IDBRangeBound } from "./idb-range-bound.type";
 /**
  * 
  */
-export type IDBQueryGetAll<
-  StoreName extends StoreNames,
-  StoreSchema extends object,
-  StoreNames extends keyof StoreSchema = keyof StoreSchema
+export type IDBQueryCount<
+  StoreNames extends string | number | symbol = string,
 > = {
   query?: IDBValidKey | IDBKeyRange;
-  count?: number;
   key?: IDBValidKey;
   range?: IDBRangeBound;
-} & IDBQueryMethodCommon<StoreNames, StoreSchema[StoreName][]>;
+} & IDBQueryMethodCommon<StoreNames, number, number>;
