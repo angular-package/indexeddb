@@ -13,7 +13,7 @@ import { IDBStoreParameters } from './type/idb-store-parameters.type';
 import { IDBStoreInterface } from './interface/idb-store.interface';
 
 /**
- * 
+ * Store methods with database connection (IDBData).
  */
 export class IDBStore<
   StoreSchema extends object,
@@ -25,20 +25,20 @@ export class IDBStore<
    * 
    */
   public get connection() {
-    return this.#database.connection;
+    return this.#data.connection;
   }
 
   /**
    * 
    */
-  public get database() {
-    return this.#database;
+  public get data() {
+    return this.#data;
   }
 
   /**
    * 
    */
-  #database!: IDBData<Name, StoreNames, Version>;
+  #data!: IDBData<Name, StoreNames, Version>;
 
   /**
    * 
@@ -53,7 +53,7 @@ export class IDBStore<
     store?: IDBStoreParameters<StoreNames>,
     version: Version = 1 as any
   ) {
-    this.#database = new IDBData(name, storeNames, store, version);
+    this.#data = new IDBData(name, storeNames, store, version);
   }
 
   /**
@@ -87,7 +87,7 @@ export class IDBStore<
     error?: (err: any) => void,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
     (Array.isArray(value) ? of(...value) : of(value)).subscribe({
@@ -128,10 +128,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.clear();
@@ -175,10 +175,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.count(query);
@@ -222,10 +222,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.delete(query);
@@ -269,10 +269,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readonly"
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.get(query);
@@ -318,10 +318,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readonly"
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.getAll(query, count);
@@ -363,10 +363,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readonly"
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => typeof onsuccess === 'function' && onsuccess(store.index(name)),
       transaction?.oncomplete,
@@ -403,10 +403,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode?: IDBTransactionMode
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.openCursor(query, direction);
@@ -447,10 +447,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
-    this.#database.objectStore(storeName, store => {
+    this.#data.objectStore(storeName, store => {
         const request = store.put(value, key);
         typeof onerror === 'function' && (request.onerror = onerror);
         typeof onsuccess === 'function' && (request.onsuccess = (ev: any) => onsuccess(ev.target.result, request, ev));
@@ -489,10 +489,10 @@ export class IDBStore<
     transaction?: IDBRequestTransaction,
 
     // Store.
-    storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
+    storeNames: StoreNames | StoreNames[] = this.#data.connection.storeNames,
     mode: IDBTransactionMode = "readwrite",
   ): this {
-    this.#database.objectStore(
+    this.#data.objectStore(
       storeName,
       store => {
         const request = store.add(value, key);
