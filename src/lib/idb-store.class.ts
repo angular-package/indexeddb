@@ -1,13 +1,13 @@
 // RxJS.
-import { of, Subscription } from 'rxjs';
+import { of } from 'rxjs';
 
 // Class.
 import { IDBData } from './idb-data.class';
 
 // Type.
-import { IDBStoreParameters } from './type/idb-store-parameters.type';
-import { IDBRequestTransaction } from './type/idb-request-transaction.type';
 import { IDBRequestOnSuccess } from './type/idb-request-on-success.type';
+import { IDBRequestTransaction } from './type/idb-request-transaction.type';
+import { IDBStoreParameters } from './type/idb-store-parameters.type';
 
 // Interface.
 import { IDBStoreInterface } from './interface/idb-store.interface';
@@ -90,25 +90,20 @@ export class IDBStore<
     storeNames: StoreNames | StoreNames[] = this.#database.connection.storeNames,
     mode: IDBTransactionMode = "readwrite"
   ): this {
-    this.#promise((resolve, reject, subscription) => (
-      subscription.add(
-        (Array.isArray(value) ? of(...value) : of(value)).subscribe({
-          next: value => this.#add(
-            storeName,
-            value as any,
-            key,
-            onsuccess,
-            onerror,
-            transaction,
-            storeNames,
-            mode
-          ),
-          complete: (resolve(subscription), complete),
-          error: err => (resolve(subscription), reject(err), typeof error === 'function' && error(err), err)
-        }),
+    (Array.isArray(value) ? of(...value) : of(value)).subscribe({
+      next: value => this.#add(
+        storeName,
+        value as any,
+        key,
+        onsuccess,
+        onerror,
+        transaction,
+        storeNames,
+        mode
       ),
-      subscription
-    ));
+      complete,
+      error
+    })
     return this;
   }
 
@@ -362,8 +357,7 @@ export class IDBStore<
     name: string,
 
     // Request.
-    onsuccess?: IDBRequestOnSuccess<any, any> | null,
-    onerror?: (this: IDBRequest<any>, ev: Event) => any,
+    onsuccess?: (index: IDBIndex) => any,
 
     // Transaction.
     transaction?: IDBRequestTransaction,
@@ -374,9 +368,7 @@ export class IDBStore<
   ): this {
     this.#database.objectStore(
       storeName,
-      store => {
-        const index = store.index(name);
-      },
+      store => typeof onsuccess === 'function' && onsuccess(store.index(name)),
       transaction?.oncomplete,
       transaction?.onabort,
       transaction?.onerror,
@@ -404,7 +396,7 @@ export class IDBStore<
     direction?: IDBCursorDirection,
 
     // Request.
-    onsuccess?: IDBRequestOnSuccess<any, IDBCursorWithValue | null> | null,
+    onsuccess?: IDBRequestOnSuccess<IDBCursorWithValue, IDBCursorWithValue | null> | null,
     onerror?: (this: IDBRequest<IDBCursorWithValue | null>, ev: Event) => any | null,
 
     // Transaction.
@@ -471,7 +463,6 @@ export class IDBStore<
     );
     return this;
   }
-  
 
   /**
    * 
@@ -518,25 +509,6 @@ export class IDBStore<
       storeNames,
       mode
     );
-    return this;
-  }
-
-  /**
-   * 
-   * @param executor 
-   * @returns 
-   */
-  #promise(
-    executor: (
-      resolve: (value: Subscription | PromiseLike<Subscription>) => void,
-      reject: (reason?: any) => void,
-      subscription: Subscription
-    ) => Subscription
-  ): this {
-    new Promise<Subscription>((resolve, reject) => executor(resolve, reject, new Subscription()))
-      .then(subscription => subscription.unsubscribe())
-      .catch(() => { })
-      .finally();
     return this;
   }
 }
