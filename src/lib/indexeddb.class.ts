@@ -11,7 +11,7 @@ import { IDBConfig } from './interface/idb-config.interface';
 import { IDBStoreParameters } from './type/idb-store-parameters.type';
 
 /**
- * Store and query for IndexedDB client-side storage.
+ * 
  */
 export class IndexedDB<
   StoreSchema extends object,
@@ -108,7 +108,7 @@ export class IndexedDB<
       ev => onOpenSuccess(
         this,
         this.#query.objectStore,
-        this.#query.objectStore.data,
+        this.#query.objectStore.database,
         this.connection,
         this.connection.request,
         ev
