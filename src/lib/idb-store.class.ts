@@ -13,7 +13,7 @@ import { IDBStoreParameters } from './type/idb-store-parameters.type';
 import { IDBStoreInterface } from './interface/idb-store.interface';
 
 /**
- * Store methods with database connection (IDBData).
+ * 
  */
 export class IDBStore<
   StoreSchema extends object,
@@ -31,7 +31,7 @@ export class IDBStore<
   /**
    * 
    */
-  public get data() {
+  public get database() {
     return this.#data;
   }
 
