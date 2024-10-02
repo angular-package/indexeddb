@@ -1,0 +1,43 @@
+<div class="m-2">
+  <h2>IndexedDB</h2>
+</div>
+<div>
+  <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+  <table class="table mt-2">
+    <thead>
+      <tr>
+        <th></th>
+        <th><input class="form-input" name="position" ngModel /></th>
+        <th><input class="form-input" name="name" ngModel /></th>
+        <th><input class="form-input" name="weight" ngModel /></th>
+        <th><input class="form-input" name="symbol" ngModel /></th>
+        <th><button class="btn btn-success">Add</button></th>
+      </tr>
+    </thead>
+
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Position</th>
+        <th>Name</th>
+        <th>Weight</th>
+        <th>Symbol</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+  
+      <ng-container *ngFor="let item of list; index as i;">
+        <tr>
+          <td>{{item?.id}}</td>
+          <td>{{item?.position}}</td>
+          <td>{{item?.name}}</td>
+          <td>{{item?.weight}}</td>
+          <td>{{item?.symbol}}</td>
+          <td><a class="btn btn-primary" (click)="remove(item!.id)">x</a></td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+  </form>
+</div>
