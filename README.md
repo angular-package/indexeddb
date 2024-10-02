@@ -365,7 +365,7 @@ export class IndexedDB<
 > { ... }
 ```
 
-[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/indexeddb.ts)
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/indexeddb.class.ts)
 
 <br>
 

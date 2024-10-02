@@ -1,7 +1,8 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 
 // Service.
-import { IDBService } from './indexeddb/idb.service';
+// import { IDBService } from './indexeddb/idb.service';
+import { IDBService } from '@angular-package/indexeddb';
 
 // Constant.
 import { ELEMENT_DATA } from './element-data.const';
