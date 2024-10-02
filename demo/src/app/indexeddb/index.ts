@@ -1,1 +1,1 @@
-export * from './inexeddb.class';
+export * from './indexeddb.class';
