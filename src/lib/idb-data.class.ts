@@ -108,7 +108,7 @@ export class IDBData<
         onerror
       )
       :
-      this.#connection.request.onsuccess = (ev: any) => {
+      this.#connection.request.addEventListener('success', (ev: any) => {
         this.#transaction(
           (ev.target.result as any).transaction(storeNames as string | string[], mode),
           onsuccess,
@@ -116,7 +116,7 @@ export class IDBData<
           onabort,
           onerror
         );
-      }
+      });
     return this;
   }
 
@@ -136,6 +136,7 @@ export class IDBData<
     onabort?: (this: IDBTransaction, ev: Event) => any,
     onerror?: (this: IDBTransaction, ev: Event) => any,
   ): this {
+    console.log(transaction);
     if (transaction) {
       typeof onsuccess === 'function' && onsuccess(transaction);
       typeof oncomplete === 'function' && (transaction.oncomplete = oncomplete);
