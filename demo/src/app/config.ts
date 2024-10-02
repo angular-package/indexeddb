@@ -1,24 +1,27 @@
-import { IndexedDB } from "./indexeddb/indexeddb.class";
+// config.ts
+// import { IndexedDB } from "@angular-package/indexeddb";
+import { IndexedDB } from "./indexeddb";
 
-/**
- * 
- */
+// Config.
 export const IDB_CONFIG = IndexedDB.config({
-  name: 'IDBDatabase',
-  storeNames: ['periodic', 'calculations'],
+  name: 'databasename',
+  storeNames: ['storename1', 'storename2'],
   store: IndexedDB.store({
-    calculations: {
+    'storename1': {
       keyPath: 'id',
       autoIncrement: false,
+      index: [
+        { name: "name", keyPath: "name", options: { unique: false } },
+      ]
     },
-    periodic: {
+    'storename2': {
       keyPath: "id",
       autoIncrement: true,
       index: [
         { name: "name", keyPath: "name", options: { unique: false } },
         { name: "position", keyPath: "position", options: { unique: false } },
         { name: "weight", keyPath: "weight", options: { unique: false } },
-        { name: "symbol", keyPath: "symbol", options: { unique: true } },
+        { name: "symbol", keyPath: "symbol", options: { unique: false } }, // change to unique
       ],
     },
   }),

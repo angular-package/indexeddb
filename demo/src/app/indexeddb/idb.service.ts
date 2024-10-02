@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 // Class.
-import { IndexedDB } from "./inexeddb.class";
+import { IndexedDB } from "./indexeddb.class";
 
 // Config.
 import { IDBConfig } from "./idb.config";

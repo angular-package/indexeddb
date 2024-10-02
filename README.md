@@ -40,6 +40,7 @@ Package is **free** to use. If you enjoy it, please consider donating via [fiat]
 * [Demonstration](#demonstration)
 * [Skeleton](#skeleton)
 * [Code scaffolding](#code-scaffolding)
+* [Example usage](#example-usage)
 * [Documentation](#documentation)
   * [IDBConnection](#idbconnection) Class to open connection and create object store.
   * [IDBData](#idbdata) Class with opened connection (IDBConnection), to handle transaction and store.
@@ -94,6 +95,125 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 <br>
 
+## Example usage
+
+Prepare configuration.
+
+```typescript
+// config.ts
+import { IndexedDB } from "@angular-package/indexeddb";
+
+// Config.
+export const IDB_CONFIG = IndexedDB.config({
+  name: 'databasename',
+  storeNames: ['storename1', 'storename2'],
+  store: IndexedDB.store({
+    'storename1': {
+      keyPath: 'id',
+      autoIncrement: false,
+      index: [
+        { name: "name", keyPath: "name", options: { unique: false } },
+      ]
+    },
+    'storename2': {
+      keyPath: "id",
+      autoIncrement: true,
+      index: [
+        { name: "name", keyPath: "name", options: { unique: false } },
+        { name: "position", keyPath: "position", options: { unique: false } },
+        { name: "weight", keyPath: "weight", options: { unique: false } },
+        { name: "symbol", keyPath: "symbol", options: { unique: false } },
+      ],
+    },
+  }),
+  version: 1
+});
+```
+
+Use configuration and initialize database.
+
+```typescript
+// example.ts
+import { IndexedDB } from "@angular-package/indexeddb";
+import { IDB_CONFIG } from './config';
+
+// Initialize.
+const indexeddb = new IndexedDB<
+  // Create store interface.
+  {
+    storename1: {
+      id: number,
+      name: string
+    },
+    storename2: {
+      id: number,
+      name: string,
+      position: number,
+      weight: number,
+      symbol: string
+    }
+  }
+>(
+  IDB_CONFIG.name,
+  IDB_CONFIG.storeNames,
+  IDB_CONFIG.store,
+  IDB_CONFIG.version
+);
+
+// Add by method
+indexeddb.query.method({
+  'add': {
+    'storename2': {
+      value: {
+        'id': 1,
+        'name': 'name',
+        'position': 1,
+        'symbol': 'N',
+        'weight': 100
+      },
+      'onsuccess': (result) => console.log(result),
+      'onerror': (ev) => console.log(`error`, ev),
+    }
+  }
+})
+
+// Get
+indexeddb.query.method({
+  'get': {
+    'storename2': {
+      'query': 1,
+      'onsuccess': (result => console.log(result)),
+      'onerror': () => console.log(`error`)
+    },
+  }
+});
+
+// Add by store
+indexeddb.query.store({
+  'storename1': {
+    'add': {
+      'value': {
+        'id': 2,
+        'name': 'item'
+      },
+      'onsuccess': (result) => console.log(result) 
+    }
+  }
+})
+
+// Get
+indexeddb.query.store({
+  'storename1': {
+    'get': {
+      'query': 2,
+      'onsuccess': result => console.log(result)
+    }
+  }
+})
+```
+
+<br>
+
 ## Documentation
 
 The documentation is in construction and it's available at [https://angular-package.gitbook.io/indexedb](https://angular-package.gitbook.io/indexedb)
@@ -102,11 +222,27 @@ The documentation is in construction and it's available at [https://angular-pack
 
 Class to open connection and create object store.
 
+```typescript
+export class IDBConnection<
+  Name extends string = string,
+  StoreNames extends string | number | symbol = string,
+  Version extends number = number
+> { ... }
+```
+
 [GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-connection.class.ts)
 
 ### IDBData
 
 Class with opened connection (IDBConnection), to handle transaction and store.
+
+```typescript
+export class IDBData<
+  Name extends string = string,
+  StoreNames extends string | number | symbol = string,
+  Version extends number = number,
+> { ... }
+```
 
 [GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-data.class.ts)
 
@@ -114,11 +250,31 @@ Class with opened connection (IDBConnection), to handle transaction and store.
 
 Query store with JSON, by method-store or store-method.
 
+```typescript
+export class IDBQuery<
+  StoreSchema extends object,
+  Name extends string = string,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
+  Version extends number = number
+> { ... }
+```
+
 [GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-query.class.ts)
 
 ### IDBStore
 
 Store methods with database connection (IDBData).
+
+```typescript
+export class IDBStore<
+  StoreSchema extends object,
+  Name extends string = string,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
+  Version extends number = number,
+> implements IDBStoreInterface<StoreSchema, StoreNames> {
+  ...
+}
+```
 
 [GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-store.class.ts)
 
@@ -126,25 +282,90 @@ Store methods with database connection (IDBData).
 
 IDB configuration used in Angular IDBModule.
 
-[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-config.class.ts)
+```typescript
+export class IDBConfig<
+  Name extends string = string,
+  StoreNames extends string | number | symbol = string,
+  Version extends number = number
+> {
+  name?: Name;
+  storeNames?: StoreNames | StoreNames[];
+  store?: IDBStoreParameters<StoreNames>;
+  version?: Version;
+};
+```
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb.config.ts)
 
 ### IDBModule
 
 Angular Module with indexeddb service.
 
-[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-module.class.ts)
+```typescript
+@NgModule({
+  declarations: [],
+  imports: [
+    CommonModule
+  ]
+})
+export class IDBModule {
+  static forRoot(@Optional() @Inject(IDBConfig) config?: IDBConfig): ModuleWithProviders<IDBModule> {
+    return {
+      ngModule: IDBModule,
+      providers: [
+        IDBService,
+        {provide: IDBConfig, useValue: config, multi: false}
+      ]
+    }
+  }
+  static forChild(@Optional() @Inject(IDBConfig) config: IDBConfig): ModuleWithProviders<IDBModule> {
+    return {
+      ngModule: IDBModule,
+      providers: [
+        IDBService,
+        {provide: IDBConfig, useValue: config, multi: false}
+      ]
+    };
+  }
+}
+```
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb.module.ts)
 
 ### IDBService
 
 Angular Service with IndexedDB class.
 
-[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb-service.class.ts)
+```typescript
+@Injectable({
+  providedIn: "root",
+})
+export class IDBService<
+  StoreSchema extends object,
+  Name extends string = string,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
+  Version extends number = number
+> {
+  ...
+}
+```
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/idb.service.ts)
 
 ### IndexedDB
 
 Store and query for IndexedDB client-side storage.
 
-[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/indexeddb.class.ts)
+```typescript
+export class IndexedDB<
+  StoreSchema extends object,
+  Name extends string = string,
+  StoreNames extends keyof StoreSchema = keyof StoreSchema,
+  Version extends number = number
+> { ... }
+```
+
+[GitHub](https://github.com/angular-package/indexeddb/blob/main/src/lib/indexeddb.ts)
 
 <br>
 
