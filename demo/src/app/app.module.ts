@@ -6,8 +6,11 @@ import { AppComponent } from './app.component';
 
 // Module.
 import { AppRoutingModule } from './app-routing.module';
-import { IDBModule } from './indexeddb/idb.module';
 import { TableModule } from './table/table.module';
+
+
+// import { IDBModule } from './indexeddb/idb.module';
+import { IDBModule } from '@angular-package/indexeddb';
 
 // Config.
 import { IDB_CONFIG } from './indexeddb.config';

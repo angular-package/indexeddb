@@ -1,4 +1,5 @@
-import { IndexedDB } from "./indexeddb/indexeddb.class";
+// import { IndexedDB } from "./indexeddb/indexeddb.class";
+import { IndexedDB } from '@angular-package/indexeddb';
 
 /**
  * 

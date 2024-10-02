@@ -3,7 +3,8 @@ import { NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 
 // Service.
-import { IDBService } from '../indexeddb/idb.service';
+// import { IDBService } from '../indexeddb/idb.service';
+import { IDBService } from '@angular-package/indexeddb';
 
 // Type.
 import { StoreSchema } from '../type/store-schema.type';
