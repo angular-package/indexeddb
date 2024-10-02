@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 // Class.
-import { IndexedDB } from "./inexeddb.class";
+import { IndexedDB } from "./indexeddb.class";
 
 // Config.
 import { IDBConfig } from "./idb.config";
@@ -10,7 +10,7 @@ import { IDBConfig } from "./idb.config";
 import { IDBStoreParameters } from "./type/idb-store-parameters.type";
 
 /**
- * Angular Service with IndexedDB class.
+ * 
  */
 @Injectable({
   providedIn: "root",
