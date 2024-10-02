@@ -122,7 +122,7 @@ export const IDB_CONFIG = IndexedDB.config({
         { name: "name", keyPath: "name", options: { unique: false } },
         { name: "position", keyPath: "position", options: { unique: false } },
         { name: "weight", keyPath: "weight", options: { unique: false } },
-        { name: "symbol", keyPath: "symbol", options: { unique: false } }, // change to unique
+        { name: "symbol", keyPath: "symbol", options: { unique: false } },
       ],
     },
   }),
